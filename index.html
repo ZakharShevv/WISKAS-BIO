@@ -10,150 +10,62 @@
 body, html {
   width:100%; height:100%; background:#1c1c1c;
   font-family:'Segoe UI',Arial,Helvetica,sans-serif;
+  display:flex; align-items:center; justify-content:center;
   overflow:hidden; user-select:none; cursor:none;
 }
-#bgVideo { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; display:none; filter:brightness(1.0) contrast(1.1);}
-.overlay { position:fixed; inset:0; background:rgba(0,0,0,0); z-index:1; display:none; }
-
-.card-container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; z-index:2; gap:40px; }
-
 .card-main {
   width:320px; min-height:420px; background: rgba(30,30,30,0.3); border-radius:20px;
-  padding:30px; color:#ddd; text-align:center; box-shadow:0 0 25px rgba(200,200,200,0.3); position:relative;
-  transition: transform 0.4s, box-shadow 0.4s;
+  padding:30px; color:#ddd; text-align:center; box-shadow:0 0 25px rgba(200,200,200,0.3);
+  position:relative;
 }
-.card-main:hover { transform:scale(1.03); box-shadow:0 0 40px rgba(255,255,255,0.2); }
 .card-main .nick { font-size:2.5em; margin-bottom:15px; color:#eee; }
 .card-main .desc { font-size:1em; opacity:0.9; color:#ccc; line-height:1.4; margin-bottom:20px; }
 .card-main .icons { display:flex; justify-content:center; gap:15px; font-size:1.5em; }
 .card-main .icons a { color:#ddd; transition:0.3s; text-shadow:0 0 3px #999; }
 .card-main .icons a:hover { color:#bbb; text-shadow:0 0 8px #aaa; }
 
-.side-btn {
-  width:30px; height:30px; background:#333; border:1px solid #555; border-radius:5px;
-  cursor:pointer; position:absolute; top:50%; transform:translateY(-50%);
-  transition: background 0.3s, transform 0.3s;
-}
-.side-btn:hover { background:#555; transform:translateY(-50%) scale(1.2); }
-#btn-left { left:-50px; }
-#btn-right { right:-50px; }
-
-.card-side {
-  width:285px; min-height:300px; background: rgba(40,40,40,0.95); border-radius:15px;
-  padding:20px; color:#ccc; box-shadow:0 0 25px rgba(100,100,100,0.2);
-  position:absolute; top:50%; transform:translateY(-50%) translateX(0);
-  opacity:0; pointer-events:none; transition: transform 0.6s ease, opacity 0.6s ease;
-}
-.card-side.active { opacity:1; pointer-events:auto; }
-.card-left { left:-300px; }
-.card-left.active { transform:translateY(-50%) translateX(320px); }
-.card-right { right:-300px; }
-.card-right.active { transform:translateY(-50%) translateX(-320px); }
-
-.card-side h3 { font-size:1.2em; margin-bottom:10px; color:#eee; }
-.card-side p { font-size:0.95em; line-height:1.4; }
-
-#startScreen { position: fixed; inset:0; background:#111; display:flex; align-items:center; justify-content:center; z-index:10; cursor:pointer; }
-#startText { color:#ccc; font-size:2.5vmax; opacity:0.85; text-align:center; text-shadow:0 0 5px #888; }
+img { width:100%; border-radius:15px; margin-bottom:15px; }
+.audio-btn { cursor:pointer; padding:10px 20px; background:#333; color:#ddd; border:none; border-radius:10px; font-size:1em; transition:0.3s; }
+.audio-btn:hover { background:#555; }
 
 .cursor { position:fixed; top:0; left:0; width:12px; height:12px; background:#bbb; border-radius:50%; pointer-events:none; z-index:9999; box-shadow:0 0 15px #999,0 0 25px #aaa; transition: transform 0.1s ease; }
-.particle { position:absolute; width:4px; height:4px; background:#bbb; border-radius:50%; opacity:1; pointer-events:none; z-index:9998; animation: particleAnim 0.6s forwards; }
-@keyframes particleAnim { to { transform: translate(var(--dx), var(--dy)) scale(0); opacity:0; } }
 </style>
 </head>
 <body>
 
-<div id="startScreen"><div id="startText">Нажми, чтобы войти</div></div>
-<video id="bgVideo" muted playsinline loop><source src="video.mp4" type="video/mp4"></video>
-<div class="overlay" id="overlay"></div>
-
-<div class="card-container">
-  <div class="card-main" id="mainCard">
-    <div class="nick">WISKAS</div>
-    <div class="desc">
-      Привет! Я WISKAS<br>
-      Мне нужны деньги, скинь хотя-бы 5 рублей<br>
-      Всегда рад даже парой копеек.<br>
-      Вьетнам, Дананг
-    </div>
-    <div class="icons">
-  <a href="https://discord.gg/WISKASCCE" target="_blank"><i class="fab fa-discord"></i></a>
-  <a href="https://youtube.com/WISKASCCE" target="_blank"><i class="fab fa-youtube"></i></a>
-  <a href="https://t.me/WISKASCCE" target="_blank"><i class="fab fa-telegram"></i></a>
-    </div>
-    <div class="side-btn" id="btn-left"></div>
-    <div class="side-btn" id="btn-right"></div>
+<div class="card-main">
+  <div class="nick">WISKAS</div>
+  <img src="photo.png" alt="Фото">
+  <div class="desc">
+    Привет! Я WISKAS<br>
+    Мне нужны деньги, скинь хотя-бы 5 рублей<br>
+    Всегда рад даже парой копеек.<br>
+    Вьетнам, Дананг
   </div>
-
-  <div class="card-side card-left" id="cardLeft">
-    <h3>Факты обо мне</h3>
-    <p> Игры: Roblox, Minecraft, Dota 2.<br>
-        Хобби: Рыбалка, футбол, программирование.<br>
-        Чтение: Кто сказал что я люблю читать?</p>
-  </div>
-  
-  <div class="card-side card-right" id="cardRight">
-    <h3>Секретики обо мне</h3>
-    <p> Я не гей, а натурал.<br>
-        У меня никогда не было настоящих друзей.<br>
-        Иногда у меня появляются плохие мысли(да я тупой).<br>
-        Мечтаю жить в России.</p>
+  <button class="audio-btn" id="audioBtn">Воспроизвести звук</button>
+  <div class="icons">
+    <a href="https://discord.gg/WISKASCCE" target="_blank"><i class="fab fa-discord"></i></a>
+    <a href="https://youtube.com/WISKASCCE" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://t.me/WISKASCCE" target="_blank"><i class="fab fa-telegram"></i></a>
   </div>
 </div>
 
+<audio id="audio" src="audio.mp3"></audio>
 <div class="cursor" id="cursor"></div>
 
 <script>
-const startScreen=document.getElementById("startScreen");
-const bgVideo=document.getElementById("bgVideo");
-const overlay=document.getElementById("overlay");
-const cursor=document.getElementById("cursor");
-
-startScreen.addEventListener("click", ()=>{
-  startScreen.style.display="none";
-  bgVideo.style.display="block";
-  overlay.style.display="block";
-  bgVideo.muted=false;
-  bgVideo.play();
-});
-
+const cursor = document.getElementById("cursor");
 document.addEventListener("mousemove", e=>{
-  cursor.style.transform=`translate(${e.clientX-6}px, ${e.clientY-6}px)`;
-  createParticle(e.clientX,e.clientY);
+  cursor.style.transform = `translate(${e.clientX-6}px, ${e.clientY-6}px)`;
 });
-function createParticle(x,y){
-  const p=document.createElement("div");
-  p.className="particle";
-  const dx=(Math.random()-0.5)*40+"px";
-  const dy=(Math.random()-0.5)*40+"px";
-  p.style.setProperty("--dx",dx);
-  p.style.setProperty("--dy",dy);
-  p.style.left=x+"px";
-  p.style.top=y+"px";
-  document.body.appendChild(p);
-  setTimeout(()=>p.remove(),600);
-}
 
-const btnLeft=document.getElementById("btn-left");
-const btnRight=document.getElementById("btn-right");
-const cardLeft=document.getElementById("cardLeft");
-const cardRight=document.getElementById("cardRight");
-
-btnLeft.addEventListener("click", ()=>{ 
-  cardLeft.classList.toggle("active"); 
-  cardRight.classList.remove("active");
-});
-btnRight.addEventListener("click", ()=>{
-  cardRight.classList.toggle("active");
-  cardLeft.classList.remove("active");
+const audio = document.getElementById("audio");
+const audioBtn = document.getElementById("audioBtn");
+audioBtn.addEventListener("click", ()=>{
+  if(audio.paused){ audio.play(); audioBtn.textContent="Пауза"; }
+  else { audio.pause(); audioBtn.textContent="Воспроизвести звук"; }
 });
 </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
