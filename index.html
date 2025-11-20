@@ -13,7 +13,7 @@ body, html {
   overflow:hidden; user-select:none; cursor:none;
 }
 #bgVideo { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; display:none; filter:brightness(1.0) contrast(1.1);}
-.overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1; display:none; }
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,0); z-index:1; display:none; }
 
 .card-container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; z-index:2; gap:40px; }
 
@@ -150,6 +150,7 @@ btnRight.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
