@@ -201,7 +201,7 @@ function createParticle(x,y){
   setTimeout(()=>p.remove(),600);
 }
 
-// ---------------- Firebase Realtime Database ----------------
+// ---------------- Firebase Realtime Database с LocalStorage ----------------
 const firebaseConfig = {
   apiKey: "AIzaSyAm4gbwqjyVJoxZ0Duxjsef4TvNj9hyLos",
   authDomain: "mybiocounter.firebaseapp.com",
@@ -218,14 +218,17 @@ const database = firebase.database();
 const viewsRef = database.ref('views');
 const viewCountElem = document.getElementById('viewCount');
 
-// Увеличиваем счётчик на 1 при заходе
-viewsRef.transaction(current => (current || 0) + 1);
+// Увеличиваем счётчик только если посетитель ещё не считал
+if (!localStorage.getItem('viewed')) {
+    viewsRef.transaction(current => (current || 0) + 1);
+    localStorage.setItem('viewed', 'yes');
+}
 
 // Отображаем обновления в реальном времени
 viewsRef.on('value', snapshot => {
-  if(snapshot.exists()){
-    viewCountElem.innerText = snapshot.val();
-  }
+    if(snapshot.exists()){
+        viewCountElem.innerText = snapshot.val();
+    }
 });
 </script>
 
