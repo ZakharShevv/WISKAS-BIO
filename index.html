@@ -5,6 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WISKAS</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  // Конфигурация Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyAm4gbwqjyVJoxZ0Duxjsef4TvNj9hyLos",
+    authDomain: "mybiocounter.firebaseapp.com",
+    databaseURL: "https://mybiocounter-default-rtdb.firebaseio.com",
+    projectId: "mybiocounter",
+    storageBucket: "mybiocounter.firebasestorage.app",
+    messagingSenderId: "173095952464",
+    appId: "1:173095952464:web:ad30834bd696a7cfae7155",
+    measurementId: "G-Q7XLVM12H5"
+  };
+
+  // Инициализация Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  const viewsRef = ref(database, 'views');
+
+  // Увеличение счётчика на 1 при заходе
+  runTransaction(viewsRef, (current) => (current || 0) + 1);
+
+  // Экспортируем для использования в DOM
+  window.viewsRef = viewsRef;
+  window.onValue = onValue;
+</script>
+
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body, html {
@@ -12,9 +43,8 @@ body, html {
   font-family:'Segoe UI',Arial,Helvetica,sans-serif;
   overflow:hidden; user-select:none; cursor:none;
 }
-* {
-  cursor: none !important;
-}
+* { cursor: none !important; }
+
 #bgVideo { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; display:none; filter:brightness(1.1) contrast(1.2); }
 .overlay { position:fixed; inset:0; background:rgba(0,0,0,0); z-index:1; display:none; }
 
@@ -81,15 +111,30 @@ body, html {
   transition:0.3s;
   text-decoration: none;
 }
-
 .card-main .icons a:hover { 
   transform:scale(1.15);
   text-shadow:0 0 15px #fff,0 0 35px #fff;
 }
 
+/* Счётчик просмотров в левом нижнем углу */
+.view-counter {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  background: rgba(255,255,255,0.1);
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 6px #fff, 0 0 12px #fff;
+}
+.view-counter i { font-size: 1.2em; }
+
 #startScreen { position: fixed; inset:0; background:#111; display:flex; align-items:center; justify-content:center; z-index:10; cursor:pointer; }
 #startText { color:#fff; font-size:2.7vmax; opacity:0.95; text-align:center; text-shadow:0 0 12px #fff, 0 0 25px #fff; }
-
 
 .particle { 
   position: absolute;
@@ -110,6 +155,7 @@ body, html {
 <body>
 
 <div id="startScreen"><div id="startText">Нажми, чтобы войти</div></div>
+
 <video id="bgVideo" muted playsinline loop>
   <source src="videoKIT.mp4" type="video/mp4">
 </video>
@@ -121,7 +167,6 @@ body, html {
 
     <div class="desc">
       Деньги, телки, тачки<br>
-    
       <div class="location">
         <i class="fa-solid fa-location-dot"></i>
         Вьетнам, Дананг
@@ -135,6 +180,12 @@ body, html {
       <a href="https://www.paypal.me/WISKASCCE" target="_blank"><i class="fab fa-paypal"></i></a>
     </div>
 
+    <!-- Счётчик просмотров -->
+    <div class="view-counter">
+      <i class="fa-solid fa-eye"></i>
+      <span id="viewCount">0</span>
+    </div>
+
   </div>
 </div>
 
@@ -146,7 +197,7 @@ const bgVideo = document.getElementById("bgVideo");
 const overlay = document.getElementById("overlay");
 const cursor = document.getElementById("cursor");
 
-startScreen.addEventListener("click", ()=>{
+startScreen.addEventListener("click", ()=> {
   startScreen.style.display = "none";
   bgVideo.style.display = "block";
   overlay.style.display = "block";
@@ -154,19 +205,14 @@ startScreen.addEventListener("click", ()=>{
   bgVideo.play();
 });
 
-document.addEventListener("mousemove", e=>{
+document.addEventListener("mousemove", e => {
   cursor.style.transform = `translate(${e.clientX-7}px, ${e.clientY-7}px)`;
   cursor.style.opacity = "1"; 
   createParticle(e.clientX, e.clientY);
 });
 
-
-document.addEventListener("mouseleave", () => {
-  cursor.style.opacity = "0";
-});
-document.addEventListener("mouseenter", () => {
-  cursor.style.opacity = "1";
-});
+document.addEventListener("mouseleave", () => { cursor.style.opacity = "0"; });
+document.addEventListener("mouseenter", () => { cursor.style.opacity = "1"; });
 
 function createParticle(x,y){
   const p = document.createElement("div");
@@ -180,6 +226,17 @@ function createParticle(x,y){
   document.body.appendChild(p);
   setTimeout(()=>p.remove(),600);
 }
+
+// ---------------- Firebase Realtime Database ----------------
+const viewCountElem = document.getElementById("viewCount");
+const { viewsRef, onValue } = window;
+
+// Слушаем изменения в реальном времени
+onValue(viewsRef, snapshot => {
+  if(snapshot.exists()){
+    viewCountElem.innerText = snapshot.val();
+  }
+});
 </script>
 
 </body>
