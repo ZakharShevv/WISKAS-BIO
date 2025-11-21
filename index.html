@@ -6,36 +6,6 @@
 <title>WISKAS</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-  // Конфигурация Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyAm4gbwqjyVJoxZ0Duxjsef4TvNj9hyLos",
-    authDomain: "mybiocounter.firebaseapp.com",
-    databaseURL: "https://mybiocounter-default-rtdb.firebaseio.com",
-    projectId: "mybiocounter",
-    storageBucket: "mybiocounter.firebasestorage.app",
-    messagingSenderId: "173095952464",
-    appId: "1:173095952464:web:ad30834bd696a7cfae7155",
-    measurementId: "G-Q7XLVM12H5"
-  };
-
-  // Инициализация Firebase
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const viewsRef = ref(database, 'views');
-
-  // Увеличение счётчика на 1 при заходе
-  runTransaction(viewsRef, (current) => (current || 0) + 1);
-
-  // Экспортируем для использования в DOM
-  window.viewsRef = viewsRef;
-  window.onValue = onValue;
-</script>
-
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body, html {
@@ -191,6 +161,10 @@ body, html {
 
 <div class="cursor" id="cursor"></div>
 
+<!-- Firebase JS SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
 const startScreen = document.getElementById("startScreen");
 const bgVideo = document.getElementById("bgVideo");
@@ -228,11 +202,27 @@ function createParticle(x,y){
 }
 
 // ---------------- Firebase Realtime Database ----------------
-const viewCountElem = document.getElementById("viewCount");
-const { viewsRef, onValue } = window;
+const firebaseConfig = {
+  apiKey: "AIzaSyAm4gbwqjyVJoxZ0Duxjsef4TvNj9hyLos",
+  authDomain: "mybiocounter.firebaseapp.com",
+  databaseURL: "https://mybiocounter-default-rtdb.firebaseio.com",
+  projectId: "mybiocounter",
+  storageBucket: "mybiocounter.firebasestorage.app",
+  messagingSenderId: "173095952464",
+  appId: "1:173095952464:web:ad30834bd696a7cfae7155",
+  measurementId: "G-Q7XLVM12H5"
+};
 
-// Слушаем изменения в реальном времени
-onValue(viewsRef, snapshot => {
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const viewsRef = database.ref('views');
+const viewCountElem = document.getElementById('viewCount');
+
+// Увеличиваем счётчик на 1 при заходе
+viewsRef.transaction(current => (current || 0) + 1);
+
+// Отображаем обновления в реальном времени
+viewsRef.on('value', snapshot => {
   if(snapshot.exists()){
     viewCountElem.innerText = snapshot.val();
   }
